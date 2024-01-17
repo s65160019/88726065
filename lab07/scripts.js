@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ฟังก์ชันสำหรับลบ To-Do
     function deleteTodo(index) {
         // ลบ To-Do ที่มีดัชนี index จากอาร์เรย์
         todos.splice(index, 1);
