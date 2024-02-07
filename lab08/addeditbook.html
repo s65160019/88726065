@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    h3 {
+        background-color: rgb(135, 206, 250); /* Sky Blue */
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 35px;
+        color: white;
+        border: 10px;
+        border-radius: 10px;
+        padding: 12px;
+        margin: 5px;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr 2fr;
+        gap: 10px;
+    }
+
+    .container input[type="text"],
+    .container input[type="hidden"] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .container p1 {
+        font-size: 16px;
+        color: rgb(135, 206, 250); /* Sky Blue */
+        margin: 8px 0;
+    }
+
+    .button-24 {
+        background: rgb(135, 206, 250); /* Sky Blue */
+        border: 1px solid rgb(135, 206, 250); /* Sky Blue */
+        border-radius: 6px;
+        box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+        box-sizing: border-box;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        font-family: 'Arial', sans-serif; /* Change the font */
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 24px;
+        min-height: 40px;
+        outline: 0;
+        padding: 12px 14px;
+        text-align: center;
+        text-rendering: geometricprecision;
+        text-transform: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .button-24:hover,
+    .button-24:active {
+        background-color: initial;
+        background-position: 0 0;
+        color: rgb(135, 206, 250); /* Sky Blue */
+    }
+
+    .button-24:active {
+        opacity: .5;
+    }
+
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book DB - JSON</title>
+</head>
+
+<body style="background-color: beige; margin: 20px;">
+    <h3>Book DB :: add edit</h3>
+    <h3 style="font-size: 20px;">เพิ่มหนังสือ :</h3>
+
+    <div class="container">
+        <br><input type="hidden" id="id">
+        <p1>ชื่อหนังสือ</p1>
+        <input type="text" id="book_name" placeholder="ชื่อหนังสือ">
+        <br><p1>ผู้แต่ง1</p1></br>
+        <input type="text" id="book_author" placeholder="ผู้แต่ง1">
+        <br><p1>ผู้แต่ง2</p1></br>
+        <input type="text" id="book_author2" placeholder="ผู้แต่ง2">
+        <br><p1>ผู้แต่ง3</p1></br>
+        <input type="text" id="book_author3" placeholder="ผู้แต่ง3">
+        <br><p1>ราคา</p1></br>
+        <input type="text" id="book_price" placeholder="ราคา">
+        <a href="search.html" class="button-24" onclick="addBook()">Save</a>
+    </div>
+
+    <hr>
+    <br>
+    <div id="result"></div>
+    <script>
+        var books;
+
+        function findMaxBookId() {
+            var max = 0;
+            for (var i = 0; i < books.length; i++) {
+                if (books[i].id > max) {
+                    max = books[i].id;
+                }
+            }
+            return max;
+        }
+
+        function addBook() {
+            var id = document.getElementById("id").value;
+            var name = document.getElementById("book_name").value;
+            var author = document.getElementById("book_author").value;
+            var author2 = document.getElementById("book_author2").value;
+            var author3 = document.getElementById("book_author3").value;
+            var price = document.getElementById("book_price").value;
+
+            if (id == "") {
+                id = findMaxBookId() + 1;
+                var book = {
+                    id: id,
+                    name: name,
+                    author: author,
+                    author2: author2,
+                    author3: author3,
+                    price: price
+                };
+                books.push(book);
+            } else {
+                for (var i = 0; i < books.length; i++) {
+                    if (books[i].id == id) {
+                        books[i].name = name;
+                        books[i].author = author;
+                        books[i].author2 = author2;
+                        books[i].author3 = author3;
+                        books[i].price = price;
+                    }
+                }
+            }
+
+            localStorage.setItem("books", JSON.stringify(books));
+
+            document.getElementById("id").value = "";
+            document.getElementById("book_name").value = "";
+            document.getElementById("book_author").value = "";
+            document.getElementById("book_author2").value = "";
+            document.getElementById("book_author3").value = "";
+            document.getElementById("book_price").value = "";
+            document.getElementById("book_name").focus();
+
+            searchBook();
+        }
+
+        function editBook(id) {
+            for (var i = 0; i < books.length; i++) {
+                if (books[i].id == id) {
+                    document.getElementById("id").value = books[i].id;
+                    document.getElementById("book_name").value = books[i].name;
+                    document.getElementById("book_price").value = books[i].price;
+                }
+            }
+        }
+
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('id');
+
+            if (bookId) {
+                const book = books.find(book => book.id == bookId);
+
+                document.getElementById("id").value = book.id;
+                document.getElementById("book_name").value = book.name;
+                document.getElementById("book_author").value = book.author;
+                document.getElementById("book_author2").value = book.author2;
+                document.getElementById("book_author3").value = book.author3;
+                document.getElementById("book_price").value = book.price;
+            }
+        }
+        // อ่านจาก localStorage
+        // แปลง string ใน localStorage กลับเป็น array แล้วเก็บในตัวแปร books
+        var books = JSON.parse(localStorage.getItem("books"));
+        // ถ้า books เป็น null หมายความว่าไม่มีข้อมูลใน localStorage ให้ก าหนดให้เป็น array ว่าง
+        if (books == null) {
+            books = [];
+        }
+        // แสดงผล
+        searchBook();
+    </script>
+</body>
+
+</html>
